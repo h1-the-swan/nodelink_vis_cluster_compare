@@ -1,0 +1,1 @@
+Given two collections of papers (e.g., representing two different fields), generate a node-link force directed graph visualization to compare the cluster (e.g., Infomap) membership of the two different groups.
