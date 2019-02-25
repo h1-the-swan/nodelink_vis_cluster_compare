@@ -1,0 +1,5 @@
+*.pyc
+venv
+data
+vendor
+*.log

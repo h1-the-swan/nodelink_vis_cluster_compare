@@ -8,8 +8,8 @@ var fuseOptions = {
 	minMatchCharLength: 1,
 	keys: [
 		"id",
-		"collection_1_papers.title",
-		"collection_2_papers.title",
+		"collection_1.title",
+		"collection_2.title",
 		"label"
 	]
 };
@@ -32,19 +32,30 @@ var simulation = d3.forceSimulation()
 	.force("center", d3.forceCenter(width / 2, height / 2));
 
 var sizeScale = d3.scaleLinear()
-	.range([8, 40]);
+	.range([5, 25]);
 var linkThicknessScale = d3.scaleLinear()
-	.range([.15, 3]);
+	// .range([.15, 3]);
+	.range([.15, 150]);
 
 
 
-	d3.json("data.json", function(error, graph) {
+	d3.json("data/cluster_compare_science_communication_and_misinformation.json", function(error, graph) {
 		// if (error) throw error;
 		console.log(graph);
 
+		//prune
+		// graph.nodes.sort(function(a,b) { return d3.descending(+a.num_papers, +b.num_papers) })
+		// graph.nodes = graph.nodes.slice(0,20);
+		// graph.links = graph.links.filter(function(d) {
+		// 	return graph.nodes.includes(d.source) && graph.nodes.includes(d.target)
+		// });
+		// console.log(graph);
+
+
 		graph.nodes.forEach(function(d) {
 			// d.id = d.id.toString();
-			d.membership_ratio = d.collection_2_papers.length / (d.collection_1_papers.length + d.collection_2_papers.length);
+			d.num_papers = +d.num_papers;
+			d.membership_ratio = d.collection_2.length / (d.collection_1.length + d.collection_2.length);
 		});
 
 		sizeScale.domain(d3.extent(graph.nodes, function(d) { return d.num_papers; }));
@@ -76,14 +87,14 @@ var linkThicknessScale = d3.scaleLinear()
 					.on("drag", dragged)
 					.on("end", dragended))
 
-			var nodeHyperlink = node.append("a")
-			.attr("target", "_blank")
-			.attr("href", function(d) {
-				return Flask.url_for("main.cluster", {"cl": d.id});
-			});
+			var nodeHyperlink = node.append("a");
+			// .attr("target", "_blank")
+			// .attr("href", function(d) {
+			// 	return Flask.url_for("main.cluster", {"cl": d.id});
+			// });
 
 		var nodeCircle = nodeHyperlink.append("circle")
-			.attr("r", function(d) { return d.radius = 5; })
+			// .attr("r", function(d) { return d.radius = 5; })
 			// .attr("fill", "red")
 			.attr("r", function(d) { return d.radius = sizeScale(d.num_papers); })
 			// .attr("fill", function(d) { return d.color_orig = d.color; })
@@ -97,9 +108,9 @@ var linkThicknessScale = d3.scaleLinear()
 				if (opt === "num_papers_cluster") {
 					d.size = d.num_papers;
 				} else if (opt === "num_papers_collection_1") {
-					d.size = d.collection_1_papers.length;
+					d.size = d.collection_1.length;
 				} else if (opt === "num_papers_collection_2") {
-					d.size = d.collection_2_papers.length;
+					d.size = d.collection_2.length;
 				}
 			});
 
@@ -108,10 +119,13 @@ var linkThicknessScale = d3.scaleLinear()
 				.transition()
 				.duration(300)
 				.attr("r", function(d) { return d.radius = sizeScale(d.size); });
+
+			console.log(sizeScale);
 		}
 		var $radioNodeSize = $( 'input[type=radio][name=radioNodeSize]' );
 		$radioNodeSize.change(function() {
 			var val = $( 'input[type=radio][name=radioNodeSize]:checked' ).val();
+			console.log(val);
 			resizeNodes(val);
 			console.log(graph);
 		});
@@ -337,16 +351,16 @@ function nodeTooltips() {
 			}
 			fillHtml('cluster_title', cltitle);
 			fillHtml('num_papers_cluster', d.num_papers);
-			fillHtml('num_papers_collection_1', d.collection_1_papers.length);
-			fillHtml('num_papers_collection_2', d.collection_2_papers.length);
-			var $paperTitles = $template.find( '.paper_titles' ).find( '.template-content' );
-			for (var i = 0, len = d.collection_1_papers.length; i < len; i++) {
-				$listItem = $( '<li class="paper_title">' ).text(d.collection_1_papers[i].title);
+			fillHtml('num_papers_collection_1', d.collection_1.length);
+			fillHtml('num_papers_collection_2', d.collection_2.length);
+			var $paperTitles = $template.find( '.collection_1_paper_titles' ).find( '.template-content' );
+			for (var i = 0, len = d.collection_1.length; i < len; i++) {
+				$listItem = $( '<li class="paper_title">' ).text(d.collection_1[i].title);
 				$paperTitles.append( $listItem );
 			}
-			var $ethicspaperTitles = $template.find( '.ethics_paper_titles' ).find( '.template-content' );
-			for (var i = 0, len = d.collection_2_papers.length; i < len; i++) {
-				$listItem = $( '<li class="paper_title">' ).text(d.collection_2_papers[i].title);
+			var $ethicspaperTitles = $template.find( '.collection_2_paper_titles' ).find( '.template-content' );
+			for (var i = 0, len = d.collection_2.length; i < len; i++) {
+				$listItem = $( '<li class="paper_title">' ).text(d.collection_2[i].title);
 				$ethicspaperTitles.append( $listItem );
 			}
 		});

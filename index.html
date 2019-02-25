@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+			<meta name="charset" content="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			<title>Cluster Compare</title>
+
+			<link rel="stylesheet" type="text/css" href="vendor/semantic.min.css">
+
+			<script type="text/javascript" src="vendor/jquery.min.js"></script>
+			<script type="text/javascript" src="vendor/semantic.min.js"></script>
+			<script type="text/javascript" src="vendor/tablesort.min.js"></script>
+			<script type="text/javascript" src="vendor/zxcvbn.js"></script>
+			<script type="text/javascript" src="vendor/d3.min.js"></script>
+				<style>
+					.links line {
+						stroke: #999;
+						stroke-opacity: 0.6;
+					}
+
+					.nodes circle {
+						stroke: #fff;
+						stroke-width: 1.5px;
+					}
+
+					.nodes circle.active-link {
+						stroke: magenta;
+					}
+
+					.node text {
+						pointer-events: none;
+						font: 10px sans-serif;
+					}
+
+					#nodelab-form {
+						visibility: hidden;
+					}
+
+					#tooltip-template {
+						display: none;
+					}
+
+					.paper_titles ul {
+						list-style: disc inside;
+						margin-left: 0;
+						padding-left: 0;
+					}
+
+					.paper_titles li {
+						margin: 0;
+						padding: 0;
+					}
+
+				</style>
+						<script type="text/javascript" src="https://cdn.jsdelivr.net/fuse/2.6.1/fuse.min.js"></script>
+				<link rel="stylesheet" href="vendor/tooltipster/dist/css/tooltipster.bundle.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+				<link rel="stylesheet" href="vendor/tooltipster/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-noir.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+						<script type="text/javascript" src="vendor/tooltipster/dist/js/tooltipster.bundle.min.js"></script>
+						<script type="text/javascript" src="vendor/tooltipster/dist/js/plugins/tooltipster/SVG/tooltipster-SVG.min.js"></script>
+						<script type="text/javascript" src="vendor/tooltipster-discovery/tooltipster-discovery.min.js"></script>
+						<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.6.1/svg.min.js"></script>
+						<script type="text/javascript" src="vendor/svg.screenbbox.min.js"></script>
+    </head>
+    <body>
+
+				<div class="ui container">
+						<h1>Network of the seed paper clusters</h1>
+						<div class="vis-description">
+							<p>
+							Network of the clusters represented in the two paper collections (seed papers). Collection_1 is Science Communication. Collection_2 is Misinformation. Nodes represent toplevel clusters, and weighted links represent number of citations between all the papers in the clusters. The colors of the nodes whether the cluster has more collection_1 papers (more purple) or more collection_2 papers (more green). Blue nodes have a mix of both. The size of the nodes represent number of papers in the cluster. Tooltips on the nodes display details, including the seed papers in the cluster. Click and drag the nodes to move them around.
+							</p>
+						</div>
+						<div>
+							<input type="text" size="50" placeholder="Search" name="textSearch" id="textSearch"/>
+						</div>
+						<div>
+							<input type="checkbox" name="tooltipCheckbox" id="tooltipCheckbox" checked/>
+							<label for="tooltipCheckbox">Tooltips</label>
+						</div>
+
+						<div>
+							<label>Size nodes by: &nbsp; </label>
+							<input type="radio" value="num_papers_cluster" name="radioNodeSize" class="radio" id="radio_num_papers_cluster" checked="checked">
+							<label for="radio_num_papers_cluster">Size of cluster</label>
+
+							<input type="radio" name="radioNodeSize" class="radio" id="radio_num_papers_collection_1" value="num_papers_collection_1">
+							<label for="radio_num_papers_collection_1">Number of collection_1 papers in cluster</label>
+
+							<input type="radio" name="radioNodeSize" class="radio" id="radio_num_papers_collection_2" value="num_papers_collection_2">
+							<label for="radio_num_papers_collection_2">Number of collection_2 papers in cluster</label>
+						</div>
+						
+						<svg width="960" height="600"></svg>
+				</div>  
+
+						<div id="tooltip-template">
+							<div class="cluster_title">
+								<h3 class="template-content"></h3>
+							</div>
+							<div class="num_papers_cluster">
+								<p>Num papers in this cluster: <span class="template-content"></span></p>
+							</div>
+							<div class="num_papers_collection_1">
+								<p>Num collection_1 papers in this cluster: <span class="template-content"></span></p>
+							</div>
+							<div class="num_papers_collection_2">
+								<p>Num collection_2 papers in this cluster: <span class="template-content"></span></p>
+							</div>
+							<div class="collection_1_paper_titles">
+								<h5>collection_1 papers:</h5>
+								<ul class="template-content">
+								</ul>
+							</div>
+							<div class="collection_2_paper_titles">
+								<h5>collection_2 papers:</h5>
+								<ul class="template-content">
+								</ul>
+							</div>
+						</div>  <!-- tooltip-template -->
+						<script src="https://d3js.org/d3-color.v1.min.js"></script>
+						<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+						<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+						<script type="text/javascript" src="nodelink_vis_cluster_compare.js"></script>
+    </body>
+</html>
+
