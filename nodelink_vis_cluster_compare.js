@@ -14,9 +14,6 @@ var fuseOptions = {
 	]
 };
 
-var svg = d3.select("svg"),
-	width = +svg.attr("width"),
-	height = +svg.attr("height");
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -25,17 +22,6 @@ var manyBody = d3.forceManyBody()
 	.strength(-500);
 	;
 
-var simulation = d3.forceSimulation()
-	.force("link", d3.forceLink().id(function(d) { return d.id; }))
-	// .force("link", d3.forceLink())
-	.force("charge", manyBody)
-	.force("center", d3.forceCenter(width / 2, height / 2));
-
-var sizeScale = d3.scaleLinear()
-	.range([5, 25]);
-var linkThicknessScale = d3.scaleLinear()
-	// .range([.15, 3]);
-	.range([.15, 150]);
 
 // reusable chart pattern inspired by:
 // https://bost.ocks.org/mike/chart/
@@ -44,14 +30,29 @@ var linkThicknessScale = d3.scaleLinear()
 
 function NodeLinkClusterCompareVis() {
 	var data = [];
-	var width = 800;
+	var width = 960;
 
 	var updateData;
 	var updateWidth;
 
 	function chart(selection) {
 		selection.each(function() {
+		var selItem = this;
 		// draw chart
+
+		var height = .625 * width;
+		var svg = d3.select(selItem).append("svg").attr("width", width).attr("height", height);
+		var simulation = d3.forceSimulation()
+			.force("link", d3.forceLink().id(function(d) { return d.id; }))
+			// .force("link", d3.forceLink())
+			.force("charge", manyBody)
+			.force("center", d3.forceCenter(width / 2, height / 2));
+
+		var sizeScale = d3.scaleLinear()
+			.range([5, 25]);
+		var linkThicknessScale = d3.scaleLinear()
+			// .range([.15, 3]);
+			.range([.15, 150]);
 
 		updateWidth = function() {
 			// use width to make any changes
@@ -59,7 +60,6 @@ function NodeLinkClusterCompareVis() {
 
 		updateData = function() {
 			// use D3 update pattern with data
-			console.log(updateData);
 			var graph = data;
 			graph.nodes.forEach(function(d) {
 				// d.id = d.id.toString();
@@ -71,8 +71,10 @@ function NodeLinkClusterCompareVis() {
 			linkThicknessScale.domain(d3.extent(graph.links, function(d) { return d.weight; }));
 
 
+			console.log(selItem);
+			console.log(svg);
 			// var link = svg.append("g")
-			var link = selection.append("g")
+			var link = svg.append("g")
 				.attr("class", "links")
 				.selectAll("line")
 				.data(graph.links)
@@ -86,7 +88,7 @@ function NodeLinkClusterCompareVis() {
 
 
 			// var node = svg.append("g")
-			var node = selection.append("g")
+			var node = svg.append("g")
 				.attr("class", "nodes")
 				.selectAll(".node")
 				.data(graph.nodes)
@@ -303,7 +305,7 @@ function NodeLinkClusterCompareVis() {
 				}
 			}
 		};
-		updateData();
+		// updateData();
 	});
 	}
 
@@ -340,9 +342,14 @@ function NodeLinkClusterCompareVis() {
 		// });
 		// console.log(graph);
 		//
-		var nodelinkvis = NodeLinkClusterCompareVis().data(graph).width(width);
-		svg.call(nodelinkvis);
+		// var nodelinkvis = NodeLinkClusterCompareVis().data(graph).width(width);
 
+		var nodelinkvis = NodeLinkClusterCompareVis().width(960);
+		d3.select("#chartDiv").call(nodelinkvis);
+
+		nodelinkvis
+			.data(graph);
+			
 
 
 	});
